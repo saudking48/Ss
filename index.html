@@ -44,12 +44,12 @@
             transform: scale(1.05);
         }
         .para-text {
-            font-size: 18px; /* Smaller text for "پارہ نمبر" */
+            font-size: 18px;
             font-weight: normal;
             color: #666;
         }
         .juz-text {
-            font-size: 24px; /* Larger text for "جزء" */
+            font-size: 24px;
             font-weight: bold;
             color: #000;
         }
@@ -90,16 +90,13 @@
 </head>
 <body>
 
-    <!-- ابتدائی صفحہ -->
     <div id="openingPage" class="full-page-image"></div>
 
-    <!-- پارہ لسٹ کا صفحہ -->
     <div id="juzPage" class="container hidden">
         <h2>پارہ منتخب کریں</h2>
         <div class="juz-list" id="juzList"></div>
     </div>
 
-    <!-- جُز تصاویر کا صفحہ -->
     <div id="imagePage" class="container hidden">
         <a class="back-arrow" onclick="goBack()">⬅️</a>
         <h2 id="juzTitle"></h2>
@@ -115,6 +112,14 @@
 
         const githubRawUrl = "https://raw.githubusercontent.com/saudking48/Ss/main/";
 
+        const juzNames = [
+            "الم", "سیقول", "تلک الرسل", "لن تنالوا", "والمحصنات", "یعتذرون", "وإذا سمعوا",
+            "ولقد أخذنا", "یعتذرون", "واعلموا", "یعتذرون", "وقال الذین", "وما أبرئ", "ربما",
+            "سبحان الذی", "قال ألم", "اقترب للناس", "قد أفلح", "وقال الذین", "امن خلق",
+            "اتل ما أوحی", "ومن یقنط", "ومالی", "فمن أظلم", "إلیہ یرد", "حم", "قال فما خطبکم",
+            "قد سمع اللہ", "تبارک الذی", "عم یتسائلون"
+        ];
+
         function loadJuzList() {
             const juzList = document.getElementById("juzList");
             juzList.innerHTML = "";
@@ -129,7 +134,7 @@
 
                 let juzText = document.createElement("div");
                 juzText.classList.add("juz-text");
-                juzText.textContent = "جزء";
+                juzText.textContent = juzNames[i - 1];
 
                 juzItem.appendChild(paraText);
                 juzItem.appendChild(juzText);
@@ -154,46 +159,13 @@
                 imgElement.classList.add("zoomable");
                 juzImagesContainer.appendChild(imgElement);
             }
-
-            addScrollAndZoomFeature();
         }
 
         function goBack() {
             document.getElementById("imagePage").classList.add("hidden");
             document.getElementById("juzPage").classList.remove("hidden");
         }
-
-        function addScrollAndZoomFeature() {
-            let images = document.querySelectorAll(".zoomable");
-
-            images.forEach(img => {
-                let scale = 1;
-                let startY, moveY;
-
-                img.addEventListener("touchstart", (e) => {
-                    if (e.touches.length === 1) {
-                        startY = e.touches[0].clientY;
-                    }
-                });
-
-                img.addEventListener("touchmove", (e) => {
-                    if (e.touches.length === 1) {
-                        moveY = e.touches[0].clientY;
-                        let deltaY = moveY - startY;
-                        window.scrollBy(0, -deltaY * 1.2);
-                        startY = moveY;
-                    }
-                });
-
-                img.addEventListener("wheel", (e) => {
-                    e.preventDefault();
-                    scale += e.deltaY * -0.01;
-                    scale = Math.min(Math.max(0.5, scale), 3);
-                    img.style.transform = `scale(${scale})`;
-                });
-            });
-        }
     </script>
 
 </body>
-    </html>
+</html>
