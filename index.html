@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قرآن مجید</title>
+    <style>
+        body {
+            font-family: 'Noto Nastaliq Urdu', Arial, sans-serif;
+            text-align: center;
+            direction: rtl;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+        }
+        .container {
+            padding: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        .juz-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        .juz-item {
+            width: 90%;
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: 0.3s;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .juz-item:hover {
+            transform: scale(1.05);
+        }
+        .back-arrow {
+            font-size: 30px;
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            color: black;
+        }
+        .juz-images {
+            max-width: 800px;
+            margin: auto;
+            text-align: center;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .juz-images img {
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+            touch-action: pinch-zoom;
+        }
+        .full-page-image {
+            position: fixed;
+            width: 100%;
+            height: 100vh;
+            background: url('quran-cover.png') center/cover no-repeat;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ابتدائی صفحہ -->
+    <div id="openingPage" class="full-page-image"></div>
+
+    <!-- پارہ لسٹ کا صفحہ -->
+    <div id="juzPage" class="container hidden">
+        <h2>پارہ منتخب کریں</h2>
+        <div class="juz-list" id="juzList"></div>
+    </div>
+
+    <!-- جُز تصاویر کا صفحہ -->
+    <div id="imagePage" class="container hidden">
+        <a class="back-arrow" onclick="goBack()">⬅️</a>
+        <h2 id="juzTitle"></h2>
+        <div class="juz-images" id="juzImages"></div>
+    </div>
+
+    <script>
+        // 3 سیکنڈ بعد پارہ لسٹ کا صفحہ دکھائیں
+        setTimeout(() => {
+            document.getElementById("openingPage").classList.add("hidden");
+            document.getElementById("juzPage").classList.remove("hidden");
+            loadJuzList();
+        }, 3000);
+
+        // GitHub پر اپلوڈ کردہ تصاویر کے لنکس
+        const githubRawUrl = "https://raw.githubusercontent.com/saudking48/Ss/main/";
+
+        function loadJuzList() {
+            const juzList = document.getElementById("juzList");
+            juzList.innerHTML = "";
+
+            for (let i = 1; i <= 30; i++) {
+                let juzItem = document.createElement("div");
+                juzItem.classList.add("juz-item");
+                juzItem.textContent = `پارہ نمبر ${i}`;
+                juzItem.onclick = () => loadJuzImages(i);
+                juzList.appendChild(juzItem);
+            }
+        }
+
+        function loadJuzImages(juz) {
+            document.getElementById("juzPage").classList.add("hidden");
+            document.getElementById("imagePage").classList.remove("hidden");
+            document.getElementById("juzTitle").textContent = "پارہ نمبر " + juz;
+
+            const juzImagesContainer = document.getElementById("juzImages");
+            juzImagesContainer.innerHTML = "";
+
+            // ہر پارہ کے 18 صفحات فرض کیے گئے ہیں، اگر آپ کے پاس مزید یا کم ہوں تو ایڈجسٹ کریں
+            for (let i = 1; i <= 18; i++) {
+                let imgElement = document.createElement("img");
+                imgElement.src = `${githubRawUrl}juz${juz}_${i}.png`;
+                imgElement.alt = `پارہ ${juz} صفحہ ${i}`;
+                imgElement.classList.add("zoomable");
+                juzImagesContainer.appendChild(imgElement);
+            }
+
+            // Add zoom functionality
+            addZoomFeature();
+        }
+
+        function goBack() {
+            document.getElementById("imagePage").classList.add("hidden");
+            document.getElementById("juzPage").classList.remove("hidden");
+        }
+
+        function addZoomFeature() {
+            let images = document.querySelectorAll(".zoomable");
+            images.forEach(img => {
+                let scale = 1;
+                img.addEventListener("wheel", (e) => {
+                    e.preventDefault();
+                    scale += e.deltaY * -0.01;
+                    scale = Math.min(Math.max(.5, scale), 3);
+                    img.style.transform = `scale(${scale})`;
+                });
+            });
+        }
+    </script>
+
+</body>
+  </html>
