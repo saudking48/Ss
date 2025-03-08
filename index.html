@@ -36,9 +36,22 @@
             transition: 0.3s;
             font-size: 22px;
             font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .juz-item:hover {
             transform: scale(1.05);
+        }
+        .para-text {
+            font-size: 18px; /* Smaller text for "پارہ نمبر" */
+            font-weight: normal;
+            color: #666;
+        }
+        .juz-text {
+            font-size: 24px; /* Larger text for "جزء" */
+            font-weight: bold;
+            color: #000;
         }
         .back-arrow {
             font-size: 30px;
@@ -53,10 +66,12 @@
             max-width: 800px;
             margin: auto;
             text-align: center;
-            overflow: hidden;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
             align-items: center;
+            height: 90vh;
+            touch-action: pan-y;
         }
         .juz-images img {
             width: 100%;
@@ -64,7 +79,6 @@
             margin-bottom: 10px;
             border-radius: 8px;
             transition: transform 0.3s ease;
-            touch-action: pinch-zoom;
         }
         .full-page-image {
             position: fixed;
@@ -93,14 +107,12 @@
     </div>
 
     <script>
-        // 3 سیکنڈ بعد پارہ لسٹ کا صفحہ دکھائیں
         setTimeout(() => {
             document.getElementById("openingPage").classList.add("hidden");
             document.getElementById("juzPage").classList.remove("hidden");
             loadJuzList();
         }, 3000);
 
-        // GitHub پر اپلوڈ کردہ تصاویر کے لنکس
         const githubRawUrl = "https://raw.githubusercontent.com/saudking48/Ss/main/";
 
         function loadJuzList() {
@@ -110,8 +122,19 @@
             for (let i = 1; i <= 30; i++) {
                 let juzItem = document.createElement("div");
                 juzItem.classList.add("juz-item");
-                juzItem.textContent = `پارہ نمبر ${i}`;
+
+                let paraText = document.createElement("div");
+                paraText.classList.add("para-text");
+                paraText.textContent = `پارہ نمبر ${i}`;
+
+                let juzText = document.createElement("div");
+                juzText.classList.add("juz-text");
+                juzText.textContent = "جزء";
+
+                juzItem.appendChild(paraText);
+                juzItem.appendChild(juzText);
                 juzItem.onclick = () => loadJuzImages(i);
+
                 juzList.appendChild(juzItem);
             }
         }
@@ -124,7 +147,6 @@
             const juzImagesContainer = document.getElementById("juzImages");
             juzImagesContainer.innerHTML = "";
 
-            // ہر پارہ کے 18 صفحات فرض کیے گئے ہیں، اگر آپ کے پاس مزید یا کم ہوں تو ایڈجسٹ کریں
             for (let i = 1; i <= 18; i++) {
                 let imgElement = document.createElement("img");
                 imgElement.src = `${githubRawUrl}juz${juz}_${i}.png`;
@@ -133,8 +155,7 @@
                 juzImagesContainer.appendChild(imgElement);
             }
 
-            // Add zoom functionality
-            addZoomFeature();
+            addScrollAndZoomFeature();
         }
 
         function goBack() {
@@ -142,14 +163,32 @@
             document.getElementById("juzPage").classList.remove("hidden");
         }
 
-        function addZoomFeature() {
+        function addScrollAndZoomFeature() {
             let images = document.querySelectorAll(".zoomable");
+
             images.forEach(img => {
                 let scale = 1;
+                let startY, moveY;
+
+                img.addEventListener("touchstart", (e) => {
+                    if (e.touches.length === 1) {
+                        startY = e.touches[0].clientY;
+                    }
+                });
+
+                img.addEventListener("touchmove", (e) => {
+                    if (e.touches.length === 1) {
+                        moveY = e.touches[0].clientY;
+                        let deltaY = moveY - startY;
+                        window.scrollBy(0, -deltaY * 1.2);
+                        startY = moveY;
+                    }
+                });
+
                 img.addEventListener("wheel", (e) => {
                     e.preventDefault();
                     scale += e.deltaY * -0.01;
-                    scale = Math.min(Math.max(.5, scale), 3);
+                    scale = Math.min(Math.max(0.5, scale), 3);
                     img.style.transform = `scale(${scale})`;
                 });
             });
@@ -157,4 +196,4 @@
     </script>
 
 </body>
-  </html>
+    </html>
